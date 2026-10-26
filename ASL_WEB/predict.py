@@ -9,7 +9,9 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_POST
 
 
-
+# ==========================================
+# LOAD MODEL
+# ==========================================
 from pathlib import Path
 import joblib
 
@@ -20,7 +22,9 @@ MODEL_PATH = BASE_DIR / "ML_DATA" / "asl_model.joblib"
 model = joblib.load(MODEL_PATH)
 
 
-
+# ==========================================
+# MEDIAPIPE SETUP
+# ==========================================
 
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
@@ -34,7 +38,9 @@ hands = mp_hands.Hands(
 )
 
 
-
+# ==========================================
+# PREPROCESS LANDMARKS
+# ==========================================
 
 def preprocess_landmarks(hand_landmarks):
     landmarks = np.array(
@@ -58,7 +64,9 @@ def preprocess_landmarks(hand_landmarks):
     return landmarks.flatten().reshape(1, -1)
 
 
-
+# ==========================================
+# PREDICT ASL LETTER
+# ==========================================
 
 @require_POST
 def predict(request):
@@ -169,6 +177,7 @@ def predict(request):
         1
     )
 
+    # Encode the frame as JPEG
     success, encoded_image = cv2.imencode(
         ".jpg",
         frame,
