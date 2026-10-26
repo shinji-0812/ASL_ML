@@ -20,12 +20,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-35*#7f3zd+ytz3ue(c$aok$a5n&m8aoejhv7l!@$vn#ifvk1jc'
+import os
+
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-local-development-key"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [".vercel.app",
+                 "localhost",
+                 "127.0.0.1"]
 
 
 # Application definition
@@ -116,6 +123,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 # Email
