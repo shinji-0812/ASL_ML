@@ -1,0 +1,1249 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignSpeak — Communication Studio</title>
+
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #080b13;
+            --panel: #101622;
+            --line: #293448;
+            --text: #f4f7fb;
+            --muted: #8d9bb0;
+            --cyan: #56e5f2;
+            --green: #5be0a0;
+            --red: #ff7e91;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(ellipse at 75% 0%, #12304155, transparent 38%),
+                var(--bg);
+        }
+
+        button, textarea {
+            font: inherit;
+        }
+
+        button {
+            padding: 11px 15px;
+            border: 1px solid #2b394e;
+            border-radius: 10px;
+            background: #192333;
+            color: var(--text);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover:not(:disabled) {
+            border-color: var(--cyan);
+        }
+
+        button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .primary {
+            background: var(--cyan);
+            color: #04141a;
+            border-color: var(--cyan);
+        }
+
+        .speak {
+            background: #12372f;
+            color: #8df0bd;
+        }
+
+        .danger {
+            background: #351c29;
+            color: #ffb5c0;
+        }
+
+        .app {
+            max-width: 1600px;
+            min-height: 100vh;
+            margin: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 13px;
+            background: var(--cyan);
+            color: #04141a;
+            font-size: 23px;
+            font-weight: 900;
+        }
+
+        .brand-name {
+            font-size: 24px;
+            font-weight: 850;
+        }
+
+        .brand-name span {
+            color: var(--cyan);
+        }
+
+        .brand-caption {
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .top-status {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 10px 14px;
+            border: 1px solid var(--line);
+            border-radius: 30px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #66758a;
+        }
+
+        .dot.active {
+            background: var(--green);
+        }
+
+        .workspace {
+            flex: 1;
+            min-height: 550px;
+            display: grid;
+            grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.1fr);
+            gap: 20px;
+        }
+
+        .panel {
+            min-width: 0;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            background: linear-gradient(145deg, #111927, #0d131f);
+            overflow: hidden;
+        }
+
+        .message-panel {
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+        }
+
+        .eyebrow {
+            color: var(--cyan);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        h1, h2, p {
+            margin-top: 0;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 23px;
+        }
+
+        .helper {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .editor-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 18px 0 10px;
+            font-size: 12px;
+        }
+
+        #messageInput {
+            flex: 1;
+            width: 100%;
+            min-height: 180px;
+            resize: vertical;
+            padding: 18px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            outline: none;
+            background: #080e18;
+            color: var(--text);
+            font-size: 21px;
+            line-height: 1.6;
+        }
+
+        #messageInput:focus {
+            border-color: var(--cyan);
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .editor-hint {
+            margin-top: 10px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
+            margin-top: 15px;
+        }
+
+        .message-bottom {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: auto;
+            padding-top: 18px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .right-column {
+            display: grid;
+            grid-template-rows: minmax(300px, 1fr) auto;
+            gap: 18px;
+            min-height: 0;
+        }
+
+        .camera-panel {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            padding: 20px;
+        }
+
+        .camera-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .camera-head h2 {
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .camera-subtitle {
+            margin-bottom: 0;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .live-tag {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 9px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .camera-frame {
+            position: relative;
+            flex: 1;
+            min-height: 220px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 15px;
+            background: #080d15;
+        }
+
+        #video {
+            display: none;
+        }
+
+        #output {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .camera-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .camera-symbol {
+            margin-bottom: 10px;
+            color: var(--cyan);
+            font-size: 36px;
+        }
+
+        .camera-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .camera-actions button {
+            flex: 1;
+        }
+
+        .camera-foot {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .recognition-panel {
+            display: grid;
+            grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+            align-items: center;
+            gap: 18px;
+            padding: 18px;
+        }
+
+        .detected-box {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .letter-tile {
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            width: 70px;
+            height: 70px;
+            border: 1px solid #2e5060;
+            border-radius: 16px;
+            background: #123040;
+            color: var(--cyan);
+            font-size: 40px;
+            font-weight: 900;
+        }
+
+        .small-label {
+            color: var(--muted);
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .detected-caption {
+            margin-top: 7px;
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+        .detected-sub {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .progress-heading {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 10px;
+        }
+
+        .track {
+            height: 5px;
+            margin-top: 9px;
+            overflow: hidden;
+            border-radius: 20px;
+            background: #263246;
+        }
+
+        #confidenceBar, #timerBar {
+            width: 0;
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, #1bb9cd, #6beef0);
+            transition: width 0.1s linear;
+        }
+
+        .timer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .timer-copy {
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        .timer-number {
+            color: var(--cyan);
+            font-size: 24px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        @media (max-width: 900px) {
+            .app {
+                padding: 15px;
+            }
+
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .message-panel {
+                min-height: 500px;
+            }
+
+            .right-column {
+                grid-template-rows: 400px auto;
+            }
+
+            .camera-frame {
+                min-height: 220px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .app {
+                padding: 10px;
+            }
+
+            .brand-name {
+                font-size: 20px;
+            }
+
+            .top-status {
+                font-size: 10px;
+            }
+
+            .message-panel {
+                padding: 17px;
+            }
+
+            .camera-panel {
+                padding: 13px;
+            }
+
+            .recognition-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .letter-tile {
+                width: 60px;
+                height: 60px;
+                font-size: 35px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="app">
+
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-mark">S</div>
+            <div>
+                <div class="brand-name">Sign<span>Speak</span></div>
+                <div class="brand-caption">Communication studio</div>
+            </div>
+        </div>
+
+        <div class="top-status">
+            <span class="dot" id="statusDot"></span>
+            <span id="statusText">Camera offline</span>
+        </div>
+    </header>
+
+    <main class="workspace">
+
+        <section class="panel message-panel">
+            <div class="eyebrow">Your voice, your message</div>
+            <h1>Communication board</h1>
+
+            <p class="helper">
+                Spell a message with ASL hand gestures. Confirmed letters
+                will appear in the message composer. You can also type
+                and edit your message.
+            </p>
+
+            <div class="editor-top">
+                <strong>MESSAGE COMPOSER</strong>
+                <span class="muted" id="messageCounter">0 characters</span>
+            </div>
+
+            <textarea
+                id="messageInput"
+                placeholder="Your message will appear here..."
+                aria-label="Editable communication message"
+                spellcheck="true"
+            ></textarea>
+
+            <p class="editor-hint">
+                Hold each gesture until the three-second countdown finishes.
+                Use Add space between words.
+            </p>
+
+            <div class="controls">
+                <button id="speakButton" class="speak" type="button">
+                    ▶ Speak message
+                </button>
+
+                <button id="spaceButton" type="button">
+                    ␠ Add space
+                </button>
+
+                <button id="backspaceButton" type="button">
+                    ⌫ Backspace
+                </button>
+
+                <button id="clearButton" class="danger" type="button">
+                    × Clear message
+                </button>
+            </div>
+
+            <div class="message-bottom">
+                <span id="messageStatus" aria-live="polite">
+                    Ready when you are.
+                </span>
+                <span>Text-to-speech enabled</span>
+            </div>
+        </section>
+
+        <div class="right-column">
+
+            <section class="panel camera-panel">
+                <div class="camera-head">
+                    <div>
+                        <h2>Live hand recognition</h2>
+                        <p class="camera-subtitle">
+                            Position your hand clearly in the frame
+                        </p>
+                    </div>
+
+                    <div class="live-tag">
+                        <span class="dot" id="liveDot"></span>
+                        <span id="liveLabel">STANDBY</span>
+                    </div>
+                </div>
+
+                <div class="camera-frame">
+                    <video id="video" autoplay playsinline muted></video>
+
+                    <img
+                        id="output"
+                        alt="Camera feed with hand landmarks"
+                    >
+
+                    <div class="camera-placeholder" id="placeholder">
+                        <div>
+                            <div class="camera-symbol">⌁</div>
+                            <strong>Your camera preview will appear here</strong>
+                            <div>
+                                Start the camera, then show an ASL alphabet gesture.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="camera-actions">
+                    <button id="startButton" class="primary" type="button">
+                        Start camera
+                    </button>
+
+                    <button id="stopButton" type="button" disabled>
+                        Stop camera
+                    </button>
+                </div>
+
+                <div class="camera-foot">
+                    <span id="cameraStatus">
+                        Camera permission has not been requested.
+                    </span>
+                    <span>3-second hold timer</span>
+                </div>
+            </section>
+
+            <section class="panel recognition-panel">
+                <div class="detected-box">
+                    <div class="letter-tile" id="letter">—</div>
+                    <div>
+                        <div class="small-label">Detected letter</div>
+                        <div class="detected-caption" id="detectedCaption">
+                            Waiting for a gesture
+                        </div>
+                        <div class="detected-sub">One letter at a time</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="progress-heading">
+                        <span class="small-label">MODEL CONFIDENCE</span>
+                        <strong id="confidenceText">0%</strong>
+                    </div>
+
+                    <div class="track">
+                        <div id="confidenceBar"></div>
+                    </div>
+
+                    <div class="timer-row">
+                        <div class="timer-copy">
+                            <strong>Gesture confirmation</strong>
+                            <div id="countdownMessage" aria-live="polite">
+                                Show a hand to begin.
+                            </div>
+                        </div>
+                        <div class="timer-number" id="countdownNumber">
+                            3.0s
+                        </div>
+                    </div>
+
+                    <div class="track">
+                        <div id="timerBar"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <span>SignSpeak · ASL Alphabet Recognition</span>
+        <span>Keep your gesture steady until the countdown finishes.</span>
+    </footer>
+</div>
+
+<canvas id="canvas" width="320" height="240" hidden></canvas>
+
+<script>
+    // ==========================================
+    // ELEMENTS
+    // ==========================================
+
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const output = document.getElementById("output");
+    const placeholder = document.getElementById("placeholder");
+
+    const startButton = document.getElementById("startButton");
+    const stopButton = document.getElementById("stopButton");
+
+    const letterElement = document.getElementById("letter");
+    const detectedCaption = document.getElementById("detectedCaption");
+
+    const confidenceText = document.getElementById("confidenceText");
+    const confidenceBar = document.getElementById("confidenceBar");
+
+    const statusText = document.getElementById("statusText");
+    const statusDot = document.getElementById("statusDot");
+
+    const liveDot = document.getElementById("liveDot");
+    const liveLabel = document.getElementById("liveLabel");
+
+    const cameraStatus = document.getElementById("cameraStatus");
+
+    const countdownNumber = document.getElementById("countdownNumber");
+    const countdownMessage = document.getElementById("countdownMessage");
+    const timerBar = document.getElementById("timerBar");
+
+    const messageInput = document.getElementById("messageInput");
+    const messageCounter = document.getElementById("messageCounter");
+    const messageStatus = document.getElementById("messageStatus");
+
+    const speakButton = document.getElementById("speakButton");
+    const spaceButton = document.getElementById("spaceButton");
+    const backspaceButton = document.getElementById("backspaceButton");
+    const clearButton = document.getElementById("clearButton");
+
+    // ==========================================
+    // STATE
+    // ==========================================
+
+    let cameraStream = null;
+    let running = false;
+    let recognitionLoopActive = false;
+    let currentImageUrl = null;
+
+    const HOLD_DURATION = 3000;
+
+    let candidateLetter = null;
+    let candidateStartedAt = 0;
+    let lastAddedLetter = null;
+    let gestureConfirmed = false;
+
+    // ==========================================
+    // MESSAGE COMPOSER
+    // ==========================================
+
+    function updateCounter() {
+        const count = messageInput.value.length;
+        messageCounter.textContent =
+            `${count} character${count === 1 ? "" : "s"}`;
+    }
+
+    function setMessageStatus(message) {
+        messageStatus.textContent = message;
+    }
+
+    function addToMessage(value) {
+        const start = messageInput.selectionStart;
+        const end = messageInput.selectionEnd;
+        const current = messageInput.value;
+
+        messageInput.value =
+            current.slice(0, start) + value + current.slice(end);
+
+        const cursorPosition = start + value.length;
+
+        messageInput.focus();
+        messageInput.setSelectionRange(cursorPosition, cursorPosition);
+
+        updateCounter();
+    }
+
+    messageInput.addEventListener("input", updateCounter);
+
+    spaceButton.addEventListener("click", () => {
+        addToMessage(" ");
+        setMessageStatus("Space added.");
+    });
+
+    backspaceButton.addEventListener("click", () => {
+        const start = messageInput.selectionStart;
+        const end = messageInput.selectionEnd;
+
+        if (start !== end) {
+            messageInput.setRangeText("", start, end, "end");
+        } else if (start > 0) {
+            messageInput.setRangeText("", start - 1, start, "end");
+        }
+
+        updateCounter();
+        setMessageStatus("Character removed.");
+    });
+
+    clearButton.addEventListener("click", () => {
+        messageInput.value = "";
+        updateCounter();
+        setMessageStatus("Message cleared.");
+        messageInput.focus();
+    });
+
+    speakButton.addEventListener("click", () => {
+        const message = messageInput.value.trim();
+
+        if (!message) {
+            setMessageStatus("Please enter a message first.");
+            return;
+        }
+
+        if (!("speechSynthesis" in window)) {
+            setMessageStatus("Text-to-speech is not supported by this browser.");
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(message);
+        utterance.lang = "en-US";
+        utterance.rate = 0.9;
+
+        utterance.onstart = () => {
+            setMessageStatus("Speaking message...");
+        };
+
+        utterance.onend = () => {
+            setMessageStatus("Finished speaking.");
+        };
+
+        utterance.onerror = () => {
+            setMessageStatus("Could not speak the message.");
+        };
+
+        window.speechSynthesis.speak(utterance);
+    });
+
+    // ==========================================
+    // DJANGO CSRF COOKIE
+    // ==========================================
+
+    function getCookie(name) {
+        let cookieValue = null;
+
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+
+                if (cookie.startsWith(name + "=")) {
+                    cookieValue = decodeURIComponent(
+                        cookie.substring(name.length + 1)
+                    );
+                    break;
+                }
+            }
+        }
+
+        return cookieValue;
+    }
+
+    // ==========================================
+    // CAMERA STATUS
+    // ==========================================
+
+    function setCameraStatus(message, active = false) {
+        statusText.textContent = active ? "Camera active" : message;
+        statusDot.classList.toggle("active", active);
+        liveDot.classList.toggle("active", active);
+        liveLabel.textContent = active ? "LIVE" : "STANDBY";
+    }
+
+    function resetGesture(message = "Show a hand to begin.") {
+        candidateLetter = null;
+        candidateStartedAt = 0;
+        lastAddedLetter = null;
+        gestureConfirmed = false;
+
+        countdownNumber.textContent = "3.0s";
+        countdownMessage.textContent = message;
+        timerBar.style.width = "0%";
+        detectedCaption.textContent = "Waiting for a gesture";
+    }
+
+    // ==========================================
+    // PROCESS DETECTED GESTURE
+    // ==========================================
+
+    function processGesture(letter) {
+        if (!letter || letter === "-" || letter === "?") {
+            candidateLetter = null;
+            candidateStartedAt = 0;
+            gestureConfirmed = false;
+
+            countdownNumber.textContent = "3.0s";
+            countdownMessage.textContent = "Show a clear hand gesture.";
+            timerBar.style.width = "0%";
+            detectedCaption.textContent = "No letter detected";
+            letterElement.textContent = "—";
+
+            return;
+        }
+
+        letter = letter.toUpperCase();
+
+        if (!/^[A-Z]$/.test(letter)) {
+            return;
+        }
+
+        letterElement.textContent = letter;
+        detectedCaption.textContent = `Letter ${letter} detected`;
+
+        // Start a new countdown when the candidate letter changes.
+        if (candidateLetter !== letter) {
+            candidateLetter = letter;
+            candidateStartedAt = performance.now();
+            gestureConfirmed = false;
+        }
+
+        if (gestureConfirmed) {
+            countdownNumber.textContent = "Done";
+            countdownMessage.textContent =
+                `Letter ${letter} added. Change gesture for the next letter.`;
+            return;
+        }
+
+        const elapsed = performance.now() - candidateStartedAt;
+        const remaining = Math.max(0, HOLD_DURATION - elapsed);
+        const seconds = remaining / 1000;
+        const progress = Math.min(100, (elapsed / HOLD_DURATION) * 100);
+
+        countdownNumber.textContent = `${seconds.toFixed(1)}s`;
+        countdownMessage.textContent = "Keep your hand steady...";
+        timerBar.style.width = `${progress}%`;
+
+        if (elapsed >= HOLD_DURATION) {
+            gestureConfirmed = true;
+            lastAddedLetter = letter;
+
+            addToMessage(letter);
+            setMessageStatus(`Added letter ${letter}.`);
+
+            countdownNumber.textContent = "Done";
+            countdownMessage.textContent =
+                `Letter ${letter} added. Change gesture for the next letter.`;
+            timerBar.style.width = "100%";
+        }
+    }
+
+    // ==========================================
+    // SEND FRAME TO DJANGO
+    // ==========================================
+
+    async function recognizeFrame() {
+        if (!running || video.readyState < 2) {
+            return;
+        }
+
+        ctx.drawImage(
+            video,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        const blob = await new Promise((resolve) => {
+            canvas.toBlob(resolve, "image/jpeg", 0.65);
+        });
+
+        if (!blob || !running) {
+            return;
+        }
+
+        const csrfToken = getCookie("csrftoken");
+
+        if (!csrfToken) {
+            throw new Error(
+                "CSRF token missing. Reload the page and try again."
+            );
+        }
+
+        const formData = new FormData();
+        formData.append("frame", blob, "frame.jpg");
+
+        // IMPORTANT: Django endpoint and CSRF header.
+        const response = await fetch("/predict/", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrfToken
+            },
+            body: formData,
+            cache: "no-store",
+            credentials: "same-origin"
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+
+            throw new Error(
+                `Django prediction failed (${response.status}): ` +
+                errorText.slice(0, 180)
+            );
+        }
+
+        const imageBlob = await response.blob();
+
+        if (!running) {
+            return;
+        }
+
+        const imageUrl = URL.createObjectURL(imageBlob);
+        output.src = imageUrl;
+
+        if (currentImageUrl) {
+            URL.revokeObjectURL(currentImageUrl);
+        }
+
+        currentImageUrl = imageUrl;
+
+        const letter =
+            response.headers.get("X-Letter") || "-";
+
+        const confidence = Number(
+            response.headers.get("X-Confidence") || 0
+        );
+
+        const status =
+            response.headers.get("X-Status") || "Processing";
+
+        const percentage = Math.max(
+            0,
+            Math.min(100, confidence * 100)
+        );
+
+        confidenceText.textContent = `${percentage.toFixed(1)}%`;
+        confidenceBar.style.width = `${percentage}%`;
+
+        cameraStatus.textContent = status;
+
+        processGesture(letter);
+    }
+
+    // ==========================================
+    // RECOGNITION LOOP
+    // ==========================================
+
+    async function recognitionLoop() {
+        if (recognitionLoopActive) {
+            return;
+        }
+
+        recognitionLoopActive = true;
+
+        try {
+            while (running) {
+                const started = performance.now();
+
+                try {
+                    await recognizeFrame();
+                } catch (error) {
+                    console.error("Recognition error:", error);
+
+                    if (running) {
+                        cameraStatus.textContent =
+                            error.message || "Could not connect to Django.";
+
+                        countdownMessage.textContent =
+                            "Check your Django prediction endpoint.";
+                    }
+
+                    await new Promise((resolve) => {
+                        setTimeout(resolve, 500);
+                    });
+                }
+
+                if (running) {
+                    const delay = Math.max(
+                        30,
+                        100 - (performance.now() - started)
+                    );
+
+                    await new Promise((resolve) => {
+                        setTimeout(resolve, delay);
+                    });
+                }
+            }
+        } finally {
+            recognitionLoopActive = false;
+        }
+    }
+
+    // ==========================================
+    // START CAMERA
+    // ==========================================
+
+    async function startCamera() {
+        if (running) {
+            return;
+        }
+
+        startButton.disabled = true;
+        cameraStatus.textContent = "Requesting camera permission...";
+
+        try {
+            if (!navigator.mediaDevices?.getUserMedia) {
+                throw new Error(
+                    "Camera unavailable. Open this page through localhost or HTTPS."
+                );
+            }
+
+            cameraStream =
+                await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 320 },
+                        height: { ideal: 240 },
+                        frameRate: { ideal: 30 },
+                        facingMode: "user"
+                    },
+                    audio: false
+                });
+
+            video.srcObject = cameraStream;
+            await video.play();
+
+            if (!video.videoWidth) {
+                await new Promise((resolve) => {
+                    video.addEventListener(
+                        "loadedmetadata",
+                        resolve,
+                        { once: true }
+                    );
+                });
+            }
+
+            running = true;
+
+            placeholder.style.display = "none";
+            output.style.display = "block";
+
+            startButton.disabled = true;
+            stopButton.disabled = false;
+
+            setCameraStatus("Camera active", true);
+            cameraStatus.textContent =
+                "Show a gesture and hold it for three seconds.";
+
+            resetGesture();
+
+            recognitionLoop();
+
+        } catch (error) {
+            console.error("Camera error:", error);
+
+            running = false;
+            setCameraStatus("Camera unavailable");
+
+            cameraStatus.textContent =
+                error.message || "Allow camera access and try again.";
+
+            placeholder.style.display = "flex";
+            output.style.display = "none";
+
+            startButton.disabled = false;
+            stopButton.disabled = true;
+
+            if (cameraStream) {
+                cameraStream.getTracks().forEach((track) => track.stop());
+            }
+
+            cameraStream = null;
+            video.srcObject = null;
+        }
+    }
+
+    // ==========================================
+    // STOP CAMERA
+    // ==========================================
+
+    function stopCamera() {
+        running = false;
+
+        if (cameraStream) {
+            cameraStream.getTracks().forEach((track) => track.stop());
+        }
+
+        cameraStream = null;
+        video.srcObject = null;
+
+        output.removeAttribute("src");
+        output.style.display = "none";
+
+        if (currentImageUrl) {
+            URL.revokeObjectURL(currentImageUrl);
+            currentImageUrl = null;
+        }
+
+        placeholder.style.display = "flex";
+        placeholder.innerHTML = `
+            <div>
+                <div class="camera-symbol">⌁</div>
+                <strong>Camera paused</strong>
+                <div>Start the camera when you are ready.</div>
+            </div>
+        `;
+
+        startButton.disabled = false;
+        stopButton.disabled = true;
+
+        letterElement.textContent = "—";
+        detectedCaption.textContent = "Waiting for a gesture";
+        confidenceText.textContent = "0%";
+        confidenceBar.style.width = "0%";
+
+        setCameraStatus("Camera offline");
+        cameraStatus.textContent = "Camera is stopped.";
+
+        resetGesture();
+    }
+
+    // ==========================================
+    // BUTTON EVENTS AND CLEANUP
+    // ==========================================
+
+    startButton.addEventListener("click", startCamera);
+    stopButton.addEventListener("click", stopCamera);
+
+    updateCounter();
+
+    window.addEventListener("beforeunload", () => {
+        running = false;
+
+        if (cameraStream) {
+            cameraStream.getTracks().forEach((track) => track.stop());
+        }
+
+        if (currentImageUrl) {
+            URL.revokeObjectURL(currentImageUrl);
+        }
+
+        if ("speechSynthesis" in window) {
+            window.speechSynthesis.cancel();
+        }
+    });
+</script>
+</body>
+</html>
