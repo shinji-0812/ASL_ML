@@ -4,509 +4,763 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SignSpeak — Communication Studio</title>
+    <title>ASL-MACHINE LEARNING</title>
 
     <style>
-        :root {
-            color-scheme: dark;
-            --bg: #080b13;
-            --panel: #101622;
-            --line: #293448;
-            --text: #f4f7fb;
-            --muted: #8d9bb0;
-            --cyan: #56e5f2;
-            --green: #5be0a0;
-            --red: #ff7e91;
-        }
+    :root {
+        color-scheme: light;
+        font-family: Inter, "Segoe UI", Arial, sans-serif;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
 
-        * {
-            box-sizing: border-box;
-        }
+        --bg: #f5f7fb;
+        --surface: #ffffff;
+        --surface-soft: #f8fafc;
+        --border: #e5eaf2;
+        --text: #172033;
+        --muted: #788397;
+        --primary: #3563e9;
+        --primary-hover: #2852cf;
+        --primary-soft: #edf2ff;
+        --success: #15966a;
+        --danger: #d94848;
+        --shadow: 0 5px 20px rgba(28, 43, 75, 0.045);
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: "Segoe UI", Arial, sans-serif;
-            color: var(--text);
-            background:
-                radial-gradient(ellipse at 75% 0%, #12304155, transparent 38%),
-                var(--bg);
-        }
+        color: var(--text);
+        background: var(--bg);
+    }
 
-        button, textarea {
-            font: inherit;
-        }
+    * {
+        box-sizing: border-box;
+    }
 
-        button {
-            padding: 11px 15px;
-            border: 1px solid #2b394e;
-            border-radius: 10px;
-            background: #192333;
-            color: var(--text);
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-        }
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+    }
 
-        button:hover:not(:disabled) {
-            border-color: var(--cyan);
-        }
+    button,
+    textarea {
+        font: inherit;
+    }
 
-        button:disabled {
-            opacity: 0.45;
-            cursor: not-allowed;
-        }
+    button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 10px 15px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #fff;
+        color: #344054;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+            background 0.18s ease,
+            border-color 0.18s ease,
+            color 0.18s ease,
+            transform 0.18s ease;
+    }
 
-        .primary {
-            background: var(--cyan);
-            color: #04141a;
-            border-color: var(--cyan);
-        }
+    button:hover:not(:disabled) {
+        border-color: #c7d2e3;
+        background: #f8faff;
+        transform: translateY(-1px);
+    }
 
-        .speak {
-            background: #12372f;
-            color: #8df0bd;
-        }
+    button:active:not(:disabled) {
+        transform: translateY(0);
+    }
 
-        .danger {
-            background: #351c29;
-            color: #ffb5c0;
-        }
+    button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
 
+    button:focus-visible,
+    textarea:focus-visible {
+        outline: 3px solid rgba(53, 99, 233, 0.2);
+        outline-offset: 2px;
+    }
+
+    #video {
+        display: none;
+    }
+
+    .app {
+        width: min(1480px, 100%);
+        min-height: 100vh;
+        margin: 0 auto;
+        padding: 0 36px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Header */
+
+    .topbar {
+        min-height: 86px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 30px;
+        position: sticky;
+        z-index: 1000;
+        top: 0;
+        background-color: white;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .brand-mark {
+        width: 43px;
+        height: 43px;
+        display: grid;
+        place-items: center;
+        border-radius: 12px;
+        background: var(--primary);
+        color: white;
+        font-size: 23px;
+        font-weight: 800;
+        box-shadow: 0 5px 12px rgba(53, 99, 233, 0.2);
+    }
+
+    .brand-name {
+        font-size: 21px;
+        font-weight: 800;
+        letter-spacing: -0.8px;
+    }
+
+    .brand-name span {
+        color: var(--primary);
+    }
+
+    .brand-caption {
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.4px;
+    }
+
+    .top-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 9px 13px;
+        border: 1px solid var(--border);
+        border-radius: 30px;
+        background: var(--surface);
+        color: #667085;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .dot {
+        width: 8px;
+        height: 8px;
+        flex: 0 0 8px;
+        border-radius: 50%;
+        background: #a0a9b8;
+    }
+
+    .dot.active {
+        background: #18a874;
+        box-shadow: 0 0 0 4px rgba(24, 168, 116, 0.11);
+    }
+
+    /* Main workspace */
+
+    .workspace {
+        display: grid;
+        grid-template-columns: minmax(320px, 0.88fr) minmax(0, 1.25fr);
+        align-items: start;
+        gap: 24px;
+        flex: 1;
+    }
+
+    .panel {
+        min-width: 0;
+        padding: 25px;
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+    }
+
+    .message-panel {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .eyebrow {
+        margin-bottom: 11px;
+        color: var(--primary);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+
+    h1 {
+        margin: 0;
+        font-size: clamp(23px, 2vw, 29px);
+        line-height: 1.25;
+        font-weight: 750;
+        letter-spacing: -1px;
+    }
+
+    h2 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 750;
+        letter-spacing: -0.3px;
+    }
+
+    .helper {
+        margin: 13px 0 27px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .editor-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 11px;
+    }
+
+    .editor-top strong,
+    .small-label {
+        color: #69758a;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.9px;
+    }
+
+    .muted {
+        color: var(--muted);
+        font-size: 11px;
+    }
+
+    #messageInput {
+        width: 100%;
+        min-height: 245px;
+        resize: vertical;
+        padding: 17px;
+        border: 1px solid #dfe5ef;
+        border-radius: 11px;
+        outline: none;
+        background: var(--surface-soft);
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.8;
+        transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease,
+            background 0.2s ease;
+    }
+
+    #messageInput::placeholder {
+        color: #a0a9b8;
+    }
+
+    #messageInput:focus {
+        border-color: #8da8ff;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(53, 99, 233, 0.08);
+    }
+
+    .editor-hint {
+        margin: 11px 0 21px;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .controls {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .controls button {
+        width: 100%;
+    }
+
+    .controls .speak {
+        grid-column: 1 / -1;
+        min-height: 46px;
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .controls .speak:hover:not(:disabled) {
+        border-color: var(--primary-hover);
+        background: var(--primary-hover);
+    }
+
+    .controls .danger {
+        color: var(--danger);
+        border-color: #f1dede;
+        background: #fffafa;
+    }
+
+    .controls .danger:hover:not(:disabled) {
+        border-color: #eababa;
+        background: #fff1f1;
+    }
+
+    .message-bottom {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 21px;
+        padding-top: 17px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+    #messageStatus {
+        color: #58667c;
+    }
+
+    /* Right column */
+
+    .right-column {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        min-width: 0;
+    }
+
+    .camera-panel {
+        padding: 23px;
+    }
+
+    .camera-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 19px;
+    }
+
+    .camera-subtitle {
+        margin: 7px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+    .live-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        flex-shrink: 0;
+        padding: 7px 10px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: var(--surface-soft);
+        color: #6b778b;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+    }
+
+    .live-tag .dot {
+        width: 6px;
+        height: 6px;
+        flex-basis: 6px;
+    }
+
+    .camera-frame {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 260px;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+        border: 1px solid #e2e8f2;
+        border-radius: 11px;
+        background:
+            radial-gradient(ellipse at center, #ffffff 0%, #f5f8fd 72%);
+    }
+
+    #output {
+        display: none;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        inset: 0;
+        object-fit: contain;
+    }
+
+    .camera-placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 25px;
+        text-align: center;
+        color: var(--muted);
+    }
+
+    .camera-placeholder > div {
+        max-width: 300px;
+    }
+
+    .camera-symbol {
+        display: grid;
+        place-items: center;
+        width: 58px;
+        height: 58px;
+        margin: 0 auto 18px;
+        border: 1px solid #dce5ff;
+        border-radius: 16px;
+        background: var(--primary-soft);
+        color: var(--primary);
+        font-size: 29px;
+    }
+
+    .camera-placeholder strong {
+        display: block;
+        margin-bottom: 9px;
+        color: #344054;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .camera-placeholder div div:last-child {
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    .camera-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+    }
+
+    .camera-actions button {
+        flex: 1;
+    }
+
+    .camera-actions .primary {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: white;
+    }
+
+    .camera-actions .primary:hover:not(:disabled) {
+        border-color: var(--primary-hover);
+        background: var(--primary-hover);
+    }
+
+    .camera-foot {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 15px;
+        color: var(--muted);
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+    /* Recognition panel */
+
+    .recognition-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 23px;
+        padding: 22px;
+    }
+
+    .detected-box {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 17px;
+        border: 1px solid #e4eaff;
+        border-radius: 12px;
+        background: linear-gradient(110deg, #f5f7ff, #ffffff);
+    }
+
+    .letter-tile {
+        display: grid;
+        place-items: center;
+        width: 66px;
+        height: 66px;
+        flex: 0 0 66px;
+        border: 1px solid #d9e2ff;
+        border-radius: 12px;
+        background: #fff;
+        color: var(--primary);
+        font-size: 31px;
+        font-weight: 800;
+        box-shadow: 0 2px 6px rgba(37, 64, 130, 0.04);
+    }
+
+    .detected-caption {
+        margin-top: 6px;
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .detected-sub {
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 11px;
+    }
+
+    .progress-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    #confidenceText {
+        color: var(--primary);
+        font-size: 13px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .track {
+        width: 100%;
+        height: 6px;
+        overflow: hidden;
+        border-radius: 20px;
+        background: #edf0f6;
+    }
+
+    #confidenceBar,
+    #timerBar {
+        width: 0%;
+        height: 100%;
+        border-radius: inherit;
+        transition: width 0.15s linear;
+    }
+
+    #confidenceBar {
+        background: var(--primary);
+    }
+
+    #timerBar {
+        background: var(--success);
+    }
+
+    .timer-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin: 22px 0 13px;
+    }
+
+    .timer-copy strong {
+        font-size: 12px;
+        font-weight: 750;
+    }
+
+    #countdownMessage {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    .timer-number {
+        min-width: 65px;
+        padding: 9px 10px;
+        border: 1px solid #d9e8e1;
+        border-radius: 9px;
+        background: #f0faf5;
+        color: #13815c;
+        font-size: 16px;
+        font-weight: 800;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* Footer */
+
+    footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-top: 28px;
+        padding: 22px 0;
+        border-top: 1px solid var(--border);
+        color: #8993a4;
+        font-size: 10px;
+        line-height: 1.7;
+    }
+
+    /* Responsive layout */
+
+    @media (min-width: 1450px) {
+        .workspace {
+            grid-template-columns: minmax(360px, 0.88fr) minmax(0, 1.25fr);
+        }
+    }
+
+    @media (max-width: 1000px) {
         .app {
-            max-width: 1600px;
-            min-height: 100vh;
-            margin: auto;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-mark {
-            display: grid;
-            place-items: center;
-            width: 45px;
-            height: 45px;
-            border-radius: 13px;
-            background: var(--cyan);
-            color: #04141a;
-            font-size: 23px;
-            font-weight: 900;
-        }
-
-        .brand-name {
-            font-size: 24px;
-            font-weight: 850;
-        }
-
-        .brand-name span {
-            color: var(--cyan);
-        }
-
-        .brand-caption {
-            margin-top: 3px;
-            color: var(--muted);
-            font-size: 10px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .top-status {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 10px 14px;
-            border: 1px solid var(--line);
-            border-radius: 30px;
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #66758a;
-        }
-
-        .dot.active {
-            background: var(--green);
+            padding: 0 22px;
         }
 
         .workspace {
-            flex: 1;
-            min-height: 550px;
-            display: grid;
-            grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.1fr);
-            gap: 20px;
-        }
-
-        .panel {
-            min-width: 0;
-            border: 1px solid var(--line);
-            border-radius: 20px;
-            background: linear-gradient(145deg, #111927, #0d131f);
-            overflow: hidden;
+            grid-template-columns: minmax(0, 1fr);
         }
 
         .message-panel {
-            display: flex;
-            flex-direction: column;
-            padding: 25px;
-        }
-
-        .eyebrow {
-            color: var(--cyan);
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        h1, h2, p {
-            margin-top: 0;
-        }
-
-        h1 {
-            margin-bottom: 10px;
-            font-size: 23px;
-        }
-
-        .helper {
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.7;
-        }
-
-        .editor-top {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin: 18px 0 10px;
-            font-size: 12px;
-        }
-
-        #messageInput {
-            flex: 1;
-            width: 100%;
-            min-height: 180px;
-            resize: vertical;
-            padding: 18px;
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            outline: none;
-            background: #080e18;
-            color: var(--text);
-            font-size: 21px;
-            line-height: 1.6;
-        }
-
-        #messageInput:focus {
-            border-color: var(--cyan);
-        }
-
-        .muted {
-            color: var(--muted);
-        }
-
-        .editor-hint {
-            margin-top: 10px;
-            color: var(--muted);
-            font-size: 11px;
-            line-height: 1.6;
-        }
-
-        .controls {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 9px;
-            margin-top: 15px;
-        }
-
-        .message-bottom {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: auto;
-            padding-top: 18px;
-            color: var(--muted);
-            font-size: 11px;
+            order: 2;
         }
 
         .right-column {
-            display: grid;
-            grid-template-rows: minmax(300px, 1fr) auto;
-            gap: 18px;
-            min-height: 0;
+            order: 1;
         }
 
-        .camera-panel {
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-            padding: 20px;
-        }
-
-        .camera-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 14px;
-        }
-
-        .camera-head h2 {
-            margin-bottom: 5px;
-            font-size: 16px;
-        }
-
-        .camera-subtitle {
-            margin-bottom: 0;
-            color: var(--muted);
-            font-size: 11px;
-        }
-
-        .live-tag {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            padding: 7px 9px;
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            font-size: 10px;
-            font-weight: 800;
+        #messageInput {
+            min-height: 190px;
         }
 
         .camera-frame {
-            position: relative;
-            flex: 1;
-            min-height: 220px;
-            overflow: hidden;
-            border: 1px solid var(--line);
-            border-radius: 15px;
-            background: #080d15;
+            min-height: 300px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .app {
+            padding: 0 14px;
         }
 
-        #video {
-            display: none;
+        .topbar {
+            min-height: 76px;
+            margin-bottom: 18px;
         }
 
-        #output {
-            display: none;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+        .brand-mark {
+            width: 38px;
+            height: 38px;
         }
 
-        .camera-placeholder {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 25px;
-            color: var(--muted);
-            text-align: center;
-            font-size: 12px;
-            line-height: 1.8;
+        .brand-name {
+            font-size: 19px;
         }
 
-        .camera-symbol {
-            margin-bottom: 10px;
-            color: var(--cyan);
-            font-size: 36px;
+        .brand-caption {
+            font-size: 10px;
+        }
+
+        .top-status {
+            padding: 8px 10px;
+            font-size: 10px;
+        }
+
+        .workspace {
+            gap: 16px;
+        }
+
+        .panel,
+        .camera-panel,
+        .recognition-panel {
+            padding: 17px;
+            border-radius: 12px;
+        }
+
+        .camera-head {
+            flex-direction: column;
+        }
+
+        .live-tag {
+            align-self: flex-start;
+        }
+
+        .camera-frame {
+            min-height: 230px;
         }
 
         .camera-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 12px;
+            flex-direction: column;
         }
 
         .camera-actions button {
-            flex: 1;
-        }
-
-        .camera-foot {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-            color: var(--muted);
-            font-size: 10px;
-        }
-
-        .recognition-panel {
-            display: grid;
-            grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-            align-items: center;
-            gap: 18px;
-            padding: 18px;
+            width: 100%;
         }
 
         .detected-box {
-            display: flex;
-            align-items: center;
-            gap: 13px;
+            gap: 12px;
+            padding: 13px;
         }
 
         .letter-tile {
-            display: grid;
-            place-items: center;
-            flex-shrink: 0;
-            width: 70px;
-            height: 70px;
-            border: 1px solid #2e5060;
-            border-radius: 16px;
-            background: #123040;
-            color: var(--cyan);
-            font-size: 40px;
-            font-weight: 900;
+            width: 57px;
+            height: 57px;
+            flex-basis: 57px;
+            font-size: 26px;
         }
 
-        .small-label {
-            color: var(--muted);
-            font-size: 9px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .detected-caption {
-            margin-top: 7px;
-            font-size: 12px;
-            font-weight: 750;
-        }
-
-        .detected-sub {
-            margin-top: 5px;
-            color: var(--muted);
-            font-size: 10px;
-        }
-
-        .progress-heading {
-            display: flex;
-            justify-content: space-between;
+        .controls {
             gap: 8px;
-            font-size: 10px;
         }
 
-        .track {
-            height: 5px;
-            margin-top: 9px;
-            overflow: hidden;
-            border-radius: 20px;
-            background: #263246;
+        .controls button {
+            padding: 10px 8px;
+            font-size: 11px;
         }
 
-        #confidenceBar, #timerBar {
-            width: 0;
-            height: 100%;
-            border-radius: 20px;
-            background: linear-gradient(90deg, #1bb9cd, #6beef0);
-            transition: width 0.1s linear;
-        }
-
-        .timer-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
-            margin-top: 14px;
-        }
-
-        .timer-copy {
-            color: var(--muted);
-            font-size: 10px;
-            line-height: 1.6;
-        }
-
-        .timer-number {
-            color: var(--cyan);
-            font-size: 24px;
-            font-weight: 900;
-            white-space: nowrap;
+        .message-bottom {
+            flex-direction: column;
         }
 
         footer {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-            color: var(--muted);
-            font-size: 10px;
+            flex-direction: column;
+            margin-top: 20px;
+            padding: 17px 0;
         }
+    }
 
-        @media (max-width: 900px) {
-            .app {
-                padding: 15px;
-            }
-
-            .workspace {
-                grid-template-columns: 1fr;
-            }
-
-            .message-panel {
-                min-height: 500px;
-            }
-
-            .right-column {
-                grid-template-rows: 400px auto;
-            }
-
-            .camera-frame {
-                min-height: 220px;
-            }
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            scroll-behavior: auto !important;
+            transition-duration: 0.01ms !important;
+            animation-duration: 0.01ms !important;
         }
+    }
+</style>
 
-        @media (max-width: 520px) {
-            .app {
-                padding: 10px;
-            }
-
-            .brand-name {
-                font-size: 20px;
-            }
-
-            .top-status {
-                font-size: 10px;
-            }
-
-            .message-panel {
-                padding: 17px;
-            }
-
-            .camera-panel {
-                padding: 13px;
-            }
-
-            .recognition-panel {
-                grid-template-columns: 1fr;
-            }
-
-            .letter-tile {
-                width: 60px;
-                height: 60px;
-                font-size: 35px;
-            }
-        }
-    </style>
+    
 </head>
 
 <body>
@@ -514,10 +768,10 @@
 
     <header class="topbar">
         <div class="brand">
-            <div class="brand-mark">S</div>
+            <div class="brand-mark">ASL</div>
             <div>
-                <div class="brand-name">Sign<span>Speak</span></div>
-                <div class="brand-caption">Communication studio</div>
+                <div class="brand-name">ALPHABET<span> SIGN LANGUAGE</span></div>
+                <div class="brand-caption">Detector</div>
             </div>
         </div>
 
@@ -531,13 +785,7 @@
 
         <section class="panel message-panel">
             <div class="eyebrow">Your voice, your message</div>
-            <h1>Communication board</h1>
-
-            <p class="helper">
-                Spell a message with ASL hand gestures. Confirmed letters
-                will appear in the message composer. You can also type
-                and edit your message.
-            </p>
+            
 
             <div class="editor-top">
                 <strong>MESSAGE COMPOSER</strong>
@@ -552,7 +800,7 @@
             ></textarea>
 
             <p class="editor-hint">
-                Hold each gesture until the three-second countdown finishes.
+                Hold each gesture until the countdown finishes.
                 Use Add space between words.
             </p>
 
@@ -632,7 +880,7 @@
                     <span id="cameraStatus">
                         Camera permission has not been requested.
                     </span>
-                    <span>3-second hold timer</span>
+                    <span>2-second hold timer</span>
                 </div>
             </section>
 
@@ -640,11 +888,11 @@
                 <div class="detected-box">
                     <div class="letter-tile" id="letter">—</div>
                     <div>
-                        <div class="small-label">Detected letter</div>
+                        <div class="small-label">Detected gesture</div>
                         <div class="detected-caption" id="detectedCaption">
                             Waiting for a gesture
                         </div>
-                        <div class="detected-sub">One letter at a time</div>
+                        <div class="detected-sub">One action at a time</div>
                     </div>
                 </div>
 
@@ -666,7 +914,7 @@
                             </div>
                         </div>
                         <div class="timer-number" id="countdownNumber">
-                            3.0s
+                            2.0s
                         </div>
                     </div>
 
@@ -679,7 +927,7 @@
     </main>
 
     <footer>
-        <span>SignSpeak · ASL Alphabet Recognition</span>
+        <span>MADE BY: PANS & MERCS</span>
         <span>Keep your gesture steady until the countdown finishes.</span>
     </footer>
 </div>
@@ -687,10 +935,6 @@
 <canvas id="canvas" width="320" height="240" hidden></canvas>
 
 <script>
-    // ==========================================
-    // ELEMENTS
-    // ==========================================
-
     const video = document.getElementById("video");
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
@@ -728,28 +972,23 @@
     const backspaceButton = document.getElementById("backspaceButton");
     const clearButton = document.getElementById("clearButton");
 
-    // ==========================================
-    // STATE
-    // ==========================================
-
     let cameraStream = null;
     let running = false;
     let recognitionLoopActive = false;
     let currentImageUrl = null;
 
-    const HOLD_DURATION = 3000;
+    const HOLD_DURATION = 1000;
 
     let candidateLetter = null;
     let candidateStartedAt = 0;
-    let lastAddedLetter = null;
     let gestureConfirmed = false;
 
-    // ==========================================
-    // MESSAGE COMPOSER
-    // ==========================================
+    let lastFrameStartedAt = 0;
+    let requestInProgress = false;
 
     function updateCounter() {
         const count = messageInput.value.length;
+
         messageCounter.textContent =
             `${count} character${count === 1 ? "" : "s"}`;
     }
@@ -774,44 +1013,55 @@
         updateCounter();
     }
 
-    messageInput.addEventListener("input", updateCounter);
-
-    spaceButton.addEventListener("click", () => {
+    function addSpace() {
         addToMessage(" ");
         setMessageStatus("Space added.");
-    });
+    }
 
-    backspaceButton.addEventListener("click", () => {
+    function backspace() {
         const start = messageInput.selectionStart;
         const end = messageInput.selectionEnd;
 
         if (start !== end) {
             messageInput.setRangeText("", start, end, "end");
         } else if (start > 0) {
-            messageInput.setRangeText("", start - 1, start, "end");
+            const previousCharacter = messageInput.value
+                .slice(0, start)
+                .slice(-1);
+
+            const deleteCount = previousCharacter.length === 1 &&
+                /[\uDC00-\uDFFF]/.test(previousCharacter) ? 2 : 1;
+
+            messageInput.setRangeText(
+                "",
+                Math.max(0, start - deleteCount),
+                start,
+                "end"
+            );
         }
 
         updateCounter();
         setMessageStatus("Character removed.");
-    });
+        messageInput.focus();
+    }
 
-    clearButton.addEventListener("click", () => {
+    function clearMessage() {
         messageInput.value = "";
         updateCounter();
         setMessageStatus("Message cleared.");
         messageInput.focus();
-    });
+    }
 
-    speakButton.addEventListener("click", () => {
-        const message = messageInput.value.trim();
-
+    function speak(message) {
         if (!message) {
             setMessageStatus("Please enter a message first.");
             return;
         }
 
         if (!("speechSynthesis" in window)) {
-            setMessageStatus("Text-to-speech is not supported by this browser.");
+            setMessageStatus(
+                "Text-to-speech is not supported by this browser."
+            );
             return;
         }
 
@@ -834,11 +1084,7 @@
         };
 
         window.speechSynthesis.speak(utterance);
-    });
-
-    // ==========================================
-    // DJANGO CSRF COOKIE
-    // ==========================================
+    }
 
     function getCookie(name) {
         let cookieValue = null;
@@ -861,10 +1107,6 @@
         return cookieValue;
     }
 
-    // ==========================================
-    // CAMERA STATUS
-    // ==========================================
-
     function setCameraStatus(message, active = false) {
         statusText.textContent = active ? "Camera active" : message;
         statusDot.classList.toggle("active", active);
@@ -875,18 +1117,13 @@
     function resetGesture(message = "Show a hand to begin.") {
         candidateLetter = null;
         candidateStartedAt = 0;
-        lastAddedLetter = null;
         gestureConfirmed = false;
 
-        countdownNumber.textContent = "3.0s";
+        countdownNumber.textContent = "2.0s";
         countdownMessage.textContent = message;
         timerBar.style.width = "0%";
         detectedCaption.textContent = "Waiting for a gesture";
     }
-
-    // ==========================================
-    // PROCESS DETECTED GESTURE
-    // ==========================================
 
     function processGesture(letter) {
         if (!letter || letter === "-" || letter === "?") {
@@ -894,25 +1131,37 @@
             candidateStartedAt = 0;
             gestureConfirmed = false;
 
-            countdownNumber.textContent = "3.0s";
+            countdownNumber.textContent = "2.0s";
             countdownMessage.textContent = "Show a clear hand gesture.";
             timerBar.style.width = "0%";
-            detectedCaption.textContent = "No letter detected";
+            detectedCaption.textContent = "No gesture detected";
             letterElement.textContent = "—";
 
             return;
         }
 
-        letter = letter.toUpperCase();
+        letter = letter.trim().toUpperCase();
 
-        if (!/^[A-Z]$/.test(letter)) {
+        const validLabels = [
+            ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "SPACE",
+            "ENTER"
+        ];
+
+        if (!validLabels.includes(letter)) {
             return;
         }
 
-        letterElement.textContent = letter;
-        detectedCaption.textContent = `Letter ${letter} detected`;
+        letterElement.textContent =
+            letter === "SPACE" ? "␠" :
+            letter === "ENTER" ? "↵" :
+            letter;
 
-        // Start a new countdown when the candidate letter changes.
+        detectedCaption.textContent =
+            letter === "SPACE" ? "Space command detected" :
+            letter === "ENTER" ? "Enter command detected" :
+            `Letter ${letter} detected`;
+
         if (candidateLetter !== letter) {
             candidateLetter = letter;
             candidateStartedAt = performance.now();
@@ -922,14 +1171,18 @@
         if (gestureConfirmed) {
             countdownNumber.textContent = "Done";
             countdownMessage.textContent =
-                `Letter ${letter} added. Change gesture for the next letter.`;
+                "Confirmed. Change your gesture for the next action.";
             return;
         }
 
         const elapsed = performance.now() - candidateStartedAt;
         const remaining = Math.max(0, HOLD_DURATION - elapsed);
         const seconds = remaining / 1000;
-        const progress = Math.min(100, (elapsed / HOLD_DURATION) * 100);
+
+        const progress = Math.min(
+            100,
+            (elapsed / HOLD_DURATION) * 100
+        );
 
         countdownNumber.textContent = `${seconds.toFixed(1)}s`;
         countdownMessage.textContent = "Keep your hand steady...";
@@ -937,115 +1190,119 @@
 
         if (elapsed >= HOLD_DURATION) {
             gestureConfirmed = true;
-            lastAddedLetter = letter;
 
-            addToMessage(letter);
-            setMessageStatus(`Added letter ${letter}.`);
+            if (letter === "SPACE") {
+                addSpace();
+            } else if (letter === "ENTER") {
+                speak(messageInput.value.trim());
+            } else {
+                addToMessage(letter);
+                setMessageStatus(`Added letter ${letter}.`);
+            }
 
             countdownNumber.textContent = "Done";
             countdownMessage.textContent =
-                `Letter ${letter} added. Change gesture for the next letter.`;
+                "Confirmed. Change your gesture for the next action.";
+
             timerBar.style.width = "100%";
         }
     }
 
-    // ==========================================
-    // SEND FRAME TO DJANGO
-    // ==========================================
-
     async function recognizeFrame() {
-        if (!running || video.readyState < 2) {
+        if (!running || video.readyState < 2 || requestInProgress) {
             return;
         }
 
-        ctx.drawImage(
-            video,
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
+        requestInProgress = true;
 
-        const blob = await new Promise((resolve) => {
-            canvas.toBlob(resolve, "image/jpeg", 0.65);
-        });
-
-        if (!blob || !running) {
-            return;
-        }
-
-        const csrfToken = getCookie("csrftoken");
-
-        if (!csrfToken) {
-            throw new Error(
-                "CSRF token missing. Reload the page and try again."
+        try {
+            ctx.drawImage(
+                video,
+                0,
+                0,
+                canvas.width,
+                canvas.height
             );
-        }
 
-        const formData = new FormData();
-        formData.append("frame", blob, "frame.jpg");
+            const blob = await new Promise((resolve) => {
+                canvas.toBlob(resolve, "image/jpeg", 0.65);
+            });
 
-        // IMPORTANT: Django endpoint and CSRF header.
-        const response = await fetch("/predict/", {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": csrfToken
-            },
-            body: formData,
-            cache: "no-store",
-            credentials: "same-origin"
-        });
+            if (!blob || !running) {
+                return;
+            }
 
-        if (!response.ok) {
-            const errorText = await response.text();
+            const csrfToken = getCookie("csrftoken");
 
-            throw new Error(
-                `Django prediction failed (${response.status}): ` +
-                errorText.slice(0, 180)
+            if (!csrfToken) {
+                throw new Error(
+                    "CSRF token missing. Reload the page and try again."
+                );
+            }
+
+            const formData = new FormData();
+            formData.append("frame", blob, "frame.jpg");
+
+            const response = await fetch("/predict/", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": csrfToken
+                },
+                body: formData,
+                cache: "no-store",
+                credentials: "same-origin"
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+
+                throw new Error(
+                    `Django prediction failed (${response.status}): ` +
+                    errorText.slice(0, 180)
+                );
+            }
+
+            const imageBlob = await response.blob();
+
+            if (!running) {
+                return;
+            }
+
+            const imageUrl = URL.createObjectURL(imageBlob);
+            output.src = imageUrl;
+
+            if (currentImageUrl) {
+                URL.revokeObjectURL(currentImageUrl);
+            }
+
+            currentImageUrl = imageUrl;
+
+            const letter =
+                response.headers.get("X-Letter") || "-";
+
+            const confidence = Number(
+                response.headers.get("X-Confidence") || 0
             );
+
+            const status =
+                response.headers.get("X-Status") || "Processing";
+
+            const percentage = Math.max(
+                0,
+                Math.min(100, confidence * 100)
+            );
+
+            confidenceText.textContent = `${percentage.toFixed(1)}%`;
+            confidenceBar.style.width = `${percentage}%`;
+
+            cameraStatus.textContent = status;
+
+            processGesture(letter);
+
+        } finally {
+            requestInProgress = false;
         }
-
-        const imageBlob = await response.blob();
-
-        if (!running) {
-            return;
-        }
-
-        const imageUrl = URL.createObjectURL(imageBlob);
-        output.src = imageUrl;
-
-        if (currentImageUrl) {
-            URL.revokeObjectURL(currentImageUrl);
-        }
-
-        currentImageUrl = imageUrl;
-
-        const letter =
-            response.headers.get("X-Letter") || "-";
-
-        const confidence = Number(
-            response.headers.get("X-Confidence") || 0
-        );
-
-        const status =
-            response.headers.get("X-Status") || "Processing";
-
-        const percentage = Math.max(
-            0,
-            Math.min(100, confidence * 100)
-        );
-
-        confidenceText.textContent = `${percentage.toFixed(1)}%`;
-        confidenceBar.style.width = `${percentage}%`;
-
-        cameraStatus.textContent = status;
-
-        processGesture(letter);
     }
-
-    // ==========================================
-    // RECOGNITION LOOP
-    // ==========================================
 
     async function recognitionLoop() {
         if (recognitionLoopActive) {
@@ -1070,18 +1327,15 @@
                         countdownMessage.textContent =
                             "Check your Django prediction endpoint.";
                     }
-
-                    await new Promise((resolve) => {
-                        setTimeout(resolve, 500);
-                    });
                 }
 
                 if (running) {
-                    const delay = Math.max(
-                        30,
-                        100 - (performance.now() - started)
-                    );
+                    const TARGET_FRAME_TIME = 1000 / 15; // Target 15 FPS
 
+                    const delay = Math.max(
+                        0,
+                        TARGET_FRAME_TIME - (performance.now() - started)
+                    );
                     await new Promise((resolve) => {
                         setTimeout(resolve, delay);
                     });
@@ -1091,10 +1345,6 @@
             recognitionLoopActive = false;
         }
     }
-
-    // ==========================================
-    // START CAMERA
-    // ==========================================
 
     async function startCamera() {
         if (running) {
@@ -1144,6 +1394,7 @@
             stopButton.disabled = false;
 
             setCameraStatus("Camera active", true);
+
             cameraStatus.textContent =
                 "Show a gesture and hold it for three seconds.";
 
@@ -1174,10 +1425,6 @@
             video.srcObject = null;
         }
     }
-
-    // ==========================================
-    // STOP CAMERA
-    // ==========================================
 
     function stopCamera() {
         running = false;
@@ -1220,9 +1467,15 @@
         resetGesture();
     }
 
-    // ==========================================
-    // BUTTON EVENTS AND CLEANUP
-    // ==========================================
+    messageInput.addEventListener("input", updateCounter);
+
+    spaceButton.addEventListener("click", addSpace);
+    backspaceButton.addEventListener("click", backspace);
+    clearButton.addEventListener("click", clearMessage);
+
+    speakButton.addEventListener("click", () => {
+        speak(messageInput.value.trim());
+    });
 
     startButton.addEventListener("click", startCamera);
     stopButton.addEventListener("click", stopCamera);
